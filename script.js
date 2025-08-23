@@ -86,8 +86,11 @@ canvas.addEventListener("wheel", (e) =>
     redraw();
 });
 
+let currentFolder = "";
+
 async function loadFolder(folder, btn)
 {
+    currentFolder = folder;
     document.querySelectorAll("header button").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
 
@@ -151,3 +154,47 @@ async function init()
 }
 
 init();
+
+async function exportCurrentFolder()
+{
+    if (!currentTiles.length) return;
+
+    // Dimensions in tiles
+    const widthTiles = (maxX - minX + 1);
+    const heightTiles = (maxY - minY + 1);
+
+    // Create an offscreen canvas big enough for the full map
+    const exportCanvas = document.createElement("canvas");
+    exportCanvas.width = widthTiles * tileSize;
+    exportCanvas.height = heightTiles * tileSize;
+    const exportCtx = exportCanvas.getContext("2d");
+    exportCtx.imageSmoothingEnabled = false;
+    exportCtx.fillStyle = "transparent";
+    exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+    // Draw all tiles
+    for (const t of currentTiles)
+    {
+        if (t.img.complete)
+        {
+            exportCtx.drawImage(
+                t.img,
+                (t.x - minX) * tileSize,
+                (t.y - minY) * tileSize,
+                tileSize,
+                tileSize
+            );
+        }
+    }
+
+    // Turn into a PNG blob
+    exportCanvas.toBlob(blob =>
+    {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${currentFolder}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }, "image/png");
+}

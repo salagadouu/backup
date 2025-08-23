@@ -44,3 +44,6 @@ canvas {
     image-rendering: pixelated;
     image-rendering: crisp-edges;
 }
+#export {
+    background-color: darkred;
+}
