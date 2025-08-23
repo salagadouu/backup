@@ -49,17 +49,3 @@ for x in range(x_min, x_max + 1):
                 time.sleep(RETRY_DELAY)
 
         time.sleep(REQUEST_DELAY)
-
-def git_commit_and_push():
-    try:
-        subprocess.run(["git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com"], check=True)
-        subprocess.run(["git", "config", "--global", "user.name", "github-actions[bot]"], check=True)
-        subprocess.run(["git", "add", "tiles"], check=True)
-        commit_message = f"Add tiles from run {timestamp}"
-        subprocess.run(["git", "commit", "-m", commit_message], check=True)
-        subprocess.run(["git", "push"], check=True)
-        print("Changes committed and pushed.")
-    except Exception as e:
-        print(f"Git commit/push failed: {e}")
-
-git_commit_and_push()
