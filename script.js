@@ -92,21 +92,25 @@ async function loadFolder(folder, btn)
     document.querySelectorAll("header button").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
 
-    // Load JSON
     const index = await fetch(`${tilesBase}/index.json`).then(r => r.json());
     const files = index[folder];
 
     currentTiles = [];
+
+    // preload first image to get tile size
+    const testImg = new Image();
+    testImg.src = `${tilesBase}/${folder}/${files[0]}`;
+    await new Promise(res => testImg.onload = res);
+    tileSize = testImg.width;
+
     for (const name of files)
     {
         const [x, y] = name.replace(".png", "").split("_").map(Number);
         const img = new Image();
         img.src = `${tilesBase}/${folder}/${name}`;
+        img.onload = () => redraw();
         currentTiles.push({ x, y, img });
-        img.onload = redraw;
-        tileSize = img.width;
     }
-    console.log(currentTiles);
 
     // update bounds
     minX = Math.min(...currentTiles.map(t => t.x));
@@ -114,7 +118,7 @@ async function loadFolder(folder, btn)
     minY = Math.min(...currentTiles.map(t => t.y));
     maxY = Math.max(...currentTiles.map(t => t.y));
 
-    // Center on first load
+    // center only on first folder load
     if (scale === 1 && offsetX === 0 && offsetY === 0)
     {
         offsetX = (canvas.width / window.devicePixelRatio - (maxX - minX + 1) * tileSize) / 2;
