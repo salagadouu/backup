@@ -35,26 +35,25 @@ let minX = 0,
     maxY = 0,
     tileSize = 0;
 
+let previousTiles = [];
+
 function redraw()
 {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.fillStyle = "#111";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     ctx.imageSmoothingEnabled = false;
     ctx.setTransform(scale, 0, 0, scale, offsetX, offsetY);
 
-    for (const t of currentTiles)
+    // draw old tiles behind, then new ones
+    for (const t of previousTiles) if (t.img.complete)
     {
-        if (t.img.complete)
-        {
-            ctx.drawImage(
-                t.img,
-                (t.x - minX) * tileSize,
-                (t.y - minY) * tileSize,
-                tileSize,
-                tileSize
-            );
-        }
+        ctx.drawImage(t.img, (t.x - minX) * tileSize, (t.y - minY) * tileSize, tileSize, tileSize);
+    }
+    for (const t of currentTiles) if (t.img.complete)
+    {
+        ctx.drawImage(t.img, (t.x - minX) * tileSize, (t.y - minY) * tileSize, tileSize, tileSize);
     }
 }
 
@@ -95,20 +94,26 @@ async function loadFolder(folder, btn)
     const index = await fetch(`${tilesBase}/index.json`).then(r => r.json());
     const files = index[folder];
 
+    previousTiles = currentTiles;
     currentTiles = [];
 
-    // preload first image to get tile size
-    const testImg = new Image();
-    testImg.src = `${tilesBase}/${folder}/${files[0]}`;
-    await new Promise(res => testImg.onload = res);
-    tileSize = testImg.width;
+    const firstImg = new Image();
+    firstImg.src = `${tilesBase}/${folder}/${files[0]}`;
+    await new Promise(res => firstImg.onload = res);
+    tileSize = firstImg.width;
 
+    let loadedCount = 0;
     for (const name of files)
     {
         const [x, y] = name.replace(".png", "").split("_").map(Number);
         const img = new Image();
         img.src = `${tilesBase}/${folder}/${name}`;
-        img.onload = () => redraw();
+        img.onload = () =>
+        {
+            loadedCount++;
+            redraw();
+            if (loadedCount > files.length / 2) previousTiles = [];
+        };
         currentTiles.push({ x, y, img });
     }
 
