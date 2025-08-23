@@ -3,6 +3,7 @@ import time
 import requests
 from datetime import datetime
 import subprocess
+import json
 
 x_min, x_max = 1040, 1044
 y_min, y_max = 728, 733
@@ -49,3 +50,25 @@ for x in range(x_min, x_max + 1):
                 time.sleep(RETRY_DELAY)
 
         time.sleep(REQUEST_DELAY)
+
+
+index_path = os.path.join("tiles", "index.json")
+
+# Load existing index.json if it exists
+if os.path.exists(index_path):
+    with open(index_path, "r") as f:
+        index = json.load(f)
+else:
+    index = {}
+
+# List all PNG files in the current run folder
+files = sorted([f for f in os.listdir(output_dir) if f.endswith(".png")])
+
+# Add entry for this timestamp
+index[timestamp] = files
+
+# Save back to index.json
+with open(index_path, "w") as f:
+    json.dump(index, f, indent=2)
+
+print(f"Updated index.json with folder {timestamp}")
