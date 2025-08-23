@@ -9,32 +9,67 @@ body {
     color: #eee;
     font-family: sans-serif;
 }
+
 header {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
+    padding: 0.5rem;
     background: rgba(20, 20, 20, 0.9);
-    padding: 6px;
-    white-space: nowrap;
-    overflow-x: auto;
+    color: white;
     z-index: 10;
+    display: flex;
+    white-space: nowrap;
+    gap: 1rem;
 }
+
+#timeline {
+    display: flex;
+    white-space: nowrap;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.date-column {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 0.2rem 0.4rem;
+    justify-items: center;
+    align-items: start;
+    align-content: start;
+    justify-content: start;
+}
+
+.date-label {
+    grid-column: 1 / -1;
+    font-weight: bold;
+    margin-bottom: 0.2rem;
+}
+
+.date-column button {
+    max-height: 20px;
+}
+
 header button {
     background: #444;
     border: none;
     color: #eee;
-    padding: 6px 12px;
+    padding: 2px 6px;
     margin-right: 6px;
     border-radius: 6px;
     cursor: pointer;
 }
+
 header button:hover {
     background: #666;
 }
+
 header button.active {
     background: #0a84ff;
 }
+
 canvas {
     display: block;
     width: 100%;
@@ -44,6 +79,11 @@ canvas {
     image-rendering: pixelated;
     image-rendering: crisp-edges;
 }
+
 #export {
     background-color: darkred;
+}
+
+#export:hover {
+    background-color: rgb(187, 23, 23);
 }

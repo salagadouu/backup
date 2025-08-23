@@ -142,16 +142,47 @@ async function init()
     const index = await fetch(`${tilesBase}/index.json`).then(r => r.json());
     const folders = Object.keys(index).sort();
 
+    let lastDate = "";
+    let dateColumn;
+
     for (const folder of folders)
     {
+        const [date, time] = folder.split("_");
+
+        if (date !== lastDate)
+        {
+            // Create a new column for this date
+            dateColumn = document.createElement("div");
+            dateColumn.className = "date-column";
+
+            const label = document.createElement("div");
+            label.className = "date-label";
+            label.textContent = date;
+            dateColumn.appendChild(label);
+
+            timeline.appendChild(dateColumn);
+            lastDate = date;
+        }
+
+        // Create a button for the time
         const btn = document.createElement("button");
-        btn.textContent = folder;
+        btn.textContent = time.replaceAll('-', ':');
         btn.onclick = () => loadFolder(folder, btn);
-        timeline.appendChild(btn);
+        dateColumn.appendChild(btn);
     }
 
-    if (folders.length) loadFolder(folders[folders.length - 1], timeline.lastChild);
+    // Load the latest folder by default
+    if (folders.length)
+    {
+        const lastFolder = folders[folders.length - 1];
+        const lastDateCol = timeline.lastChild;
+        const lastBtn = lastDateCol.querySelector("button:last-of-type");
+        loadFolder(lastFolder, lastBtn);
+    }
+
+    timeline.scrollLeft = timeline.scrollWidth;
 }
+
 
 init();
 
