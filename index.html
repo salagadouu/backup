@@ -8,11 +8,15 @@
     <body>
         <header>
             <button id="export" onclick="exportCurrentFolder()">
-                Export PNG
+                Télécharger la map
             </button>
             <div id="timeline"></div>
         </header>
         <canvas id="canvas"></canvas>
+
+        <div id="context-menu">
+            <button onclick="exportCurrentFolder()">Télécharger la map</button>
+        </div>
 
         <script src="script.js"></script>
     </body>

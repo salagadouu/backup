@@ -229,3 +229,26 @@ async function exportCurrentFolder()
         URL.revokeObjectURL(url);
     }, "image/png");
 }
+
+
+const menu = document.getElementById("context-menu");
+
+// Show menu on right click
+canvas.addEventListener("contextmenu", (e) =>
+{
+    e.preventDefault();
+    menu.style.top = e.clientY + "px";
+    menu.style.left = e.clientX + "px";
+    menu.style.display = "block";
+});
+
+// Hide menu on click elsewhere
+window.addEventListener("click", () =>
+{
+    menu.style.display = "none";
+});
+
+canvas.addEventListener("mousedown", (e) =>
+{
+    menu.style.display = "none";
+});
